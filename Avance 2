@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <tittle>
+        </title>
+<style type="text/css">
+    canvas{
+        background-color: rgb(71, 174, 69);
+        padding-left: 0;
+                    padding-right: 0;
+                    margin-left: auto;
+                    margin-right: auto;
+                    display: block;
+                    width: 800px;
+    }
+    </style>
+    </head>
+    <body onload="carga()" style="background-color:rgb(71, 174, 69);">
+        <h1>
+            Cronometro: <span id="minutos"></span>:<span id="segundos"></span>
+        </h1>
+        <canvas id= "mycanvas" width="900" height="745">
+            hola tu navegador no soporta canvas
+        </canvas>
+            <script type="text/javascript">
+                var cv=document.getElementById('mycanvas');
+                var ctx;
+                var color="red";
+                var fig="cir";
+                var press=false;
+                var player1;
+                var player2;
+                var direccion = null;
+                var speed=0;
+                var score=0;
+                var pause=false;
+                var pared = [null,null,null,null]; 
+                var cronometro;
+                var cont=0;
+
+                //titulo
+                var titulo= new Image();
+
+                //Personaje y Premio
+                var jesse= new Image();
+                var dinero= new Image();
+
+                //Musica de fondo
+                var audio = new Audio();
+
+                //Sonido al tocar el dinero
+                var sonido = new Audio();
+
+
+                //funcion dibujar cuadro
+
+                function run()
+                {
+                    cv=document.getElementById('mycanvas');
+                    ctx= cv.getContext('2d');
+
+
+                    //jugadores
+                    player1 = new Cuadro (785,685,30,35,"RED");
+                    player2 = new Cuadro (getRandomIntInclusive(700),getRandomIntInclusive(600),30,30,"BLUE");
+
+                    //4 paredes.
+                    //arriba
+                    pared[0] = new Cuadro (10,60,820,10,"GRAY");
+                    //izquierda
+                    pared[1] = new Cuadro (10,105,10,625,"GRAY");
+                    //abajo
+                    pared[2] = new Cuadro (10,720,820,10,"GRAY");
+                    //derecha
+                    pared[3] = new Cuadro (820,60,10,620,"GRAY");
+
+                    //Laberinto
+
+                    //cargar imagenes
+                    titulo.src="titulo.png";
+                    jesse.src='jesse.png';
+                    dinero.src='dinero2.png';
+                    //Sonido
+                    //sonido.src='yojoe.mp3';
+                    audio.src='BB Theme.mp3';
+                    sonido.src='jese y joy.mp3';
+
+                    paint();
+                }
+
+                function paint(){
+
+                    window.requestAnimationFrame(paint);
+                    ctx.fillStyle= "rgb(71, 174, 69)";
+                    ctx.fillRect(0,0,900,900);
+
+                    //pintar imagenes
+                    //titulo
+                    ctx.drawImage(titulo,225,0,300,55);
+                    //jugadores
+                    //player1.pintar(ctx);
+                    ctx.drawImage(jesse,player1.x,player1.y,player1.h,player1.w);
+                    //player2.pintar(ctx);
+                    ctx.drawImage(dinero,player2.x,player2.y,player2.h,player2.w);
+
+                    //Pintar Paredes
+                    //Ciclo para paredes infinitas
+                        for(var i=0; i<=pared.length; i++){
+                            if(pared[i]){
+                            pared[i].pintar(ctx);
+                            }
+                        }
+                    
+                    
+
+                    ctx.beginPath();
+                    ctx.font="25px Arial";
+                    ctx.fillStyle="Black";
+                    ctx.fillText("Dinero: $"+ score,0,50);
+                    ctx.closePath();
+
+                    if(pause){
+                        ctx.fillStyle= "rgba(0, 0, 0,0.5)";
+                        ctx.fillRect(0,0,900,900);
+                        ctx,fillStyle="white";
+                        ctx.fillText("P A U S A",380,230);  
+                    }
+
+                    if(!pause){
+                        update();
+                    }
+                }
+
+                function update(){
+                    speed=3;
+                    //arriba
+                    if(direccion=='arriba'){
+                        player1.y-=speed;
+                        if(player1.y<0){
+                            player1.y=745;
+                    }
+                    }
+                    //abajo
+                    if(direccion=='abajo'){
+                        player1.y+=speed;
+                        if(player1.y>745){
+                            player1.y=0;
+                    }
+                    }
+                    //izquierda
+                    if(direccion=='izquierda'){
+                        player1.x-=speed;
+                        if(player1.x<0){
+                        player1.x=900;
+                    }
+                    }
+                    //derecha
+                    if(direccion=='derecha'){
+                        player1.x+=speed;
+                        if(player1.x>900){
+                        player1.x=0;
+                    }
+                    }
+
+                    //colision con bolsa de dinero
+                    if(player1.se_tocan(player2)){
+                        player2.x=getRandomIntInclusive(700);
+                        player2.y=getRandomIntInclusive(600);
+                        sonido.play();
+                        score+=16000;
+                        cont++;
+                        //fin del juego
+                        final();
+                    }
+
+                    //colision con pared
+                    for(var i=0; i<=pared.length; i++){
+                    if(player1.se_tocan(pared[i])){
+                        if(direccion=='arriba'){
+                        player1.y+=speed;
+                    }
+                    //abajo
+                    if(direccion=='abajo'){
+                        player1.y-=speed;
+                    }
+                    //izquierda
+                    if(direccion=='izquierda'){
+                        player1.x+=speed;
+                    }
+                    //derecha
+                    if(direccion=='derecha'){
+                        player1.x-=speed;
+                    }
+                    }
+                    }
+
+
+                    if(player2.se_tocan(pared)){
+                        player2.x=getRandomIntInclusive(700);
+                        player2.y=getRandomIntInclusive(600);
+                     }
+                }
+
+                
+
+
+                //funcion nueva (Animacion de FPS)
+
+                window.requestAnimationFrame = (function () {
+                return window.requestAnimationFrame ||
+                 window.webkitRequestAnimationFrame ||
+                 window.mozRequestAnimationFrame ||
+                 function (callback) {
+                  window.setTimeout(callback, 17);
+                };
+                }());
+
+                //funcion color aleatorio
+                function generateRandomColor() {
+                 var letters = '0123456789ABCDEF';
+                var color = '#';
+                for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+                }
+
+                //funcion color aleatorio
+                function getRandomIntInclusive(max) {
+                min = Math.ceil(100);
+                max = Math.floor(max);
+                return Math.floor(Math.random() * (max - min + 1) + min);
+                }
+
+                //Correr codigo
+                window.addEventListener('load',run,false);
+
+
+
+                //clase Objeto Cuadrado
+                function Cuadro(x,y,w,h,c)
+                {
+                    this.x=x;
+                    this.y=y;
+                    this.w=w;
+                    this.h=h;
+                    this.c=c;
+
+                    //Funcion de verificacion si setocan las figuras
+                    this.se_tocan = function (target) { 
+                        if(target){ 
+                            if(this.x < target.x + target.w &&
+                            this.x + this.w > target.x && 
+                            this.y < target.y + target.h && 
+                            this.y + this.h > target.y){
+                            return true;
+                        }
+                        }
+                    };
+
+                    
+                    //Funcion para pintar;
+                    this.pintar = function(ctx){
+                        ctx.fillStyle=this.c;
+                        ctx.fillRect(this.x,this.y,this.w,this.h);
+                        ctx.strokeRect(this.x,this.y,this.w,this.h);
+                    }
+                }
+
+                //Movimiento de cuadro
+
+                document.addEventListener('keydown',function(e){
+                    console.log(e)
+                    //arriba
+                    if(e.keyCode==87 || e.keycode==38 ){
+                        direccion='arriba';
+                    }
+                    //abajo
+                    if(e.keyCode==83 || e.keycode==40){
+                        direccion='abajo';
+                    }
+                    //izquierda
+                    if(e.keyCode==65 || e.keycode==37){
+                        direccion='izquierda';
+                    }
+                    //derecha
+                    if(e.keyCode==68 || e.keycode==39){
+                        direccion='derecha';
+                    }
+
+                    //enter musica:
+                     if(e.keyCode==13){
+                    audio.play();
+                     }
+
+                    //Pausa
+                    if(e.keyCode==32){
+                        if(pause==false){
+                            pause=true;
+                        }else{
+                            pause=false;
+                        }
+                    }
+                })
+
+                //click de ubicacion:
+                cv.addEventListener('click',function(e){
+                    console.log(e)
+                })
+
+                //funciones del cronometro
+                function detenerse(){
+                    clearInterval(cronometro);
+                }
+                function carga(){
+                    contador_s=0;
+                    contador_m=0;
+                    s=document.getElementById("segundos");
+                    m=document.getElementById("minutos");
+
+                    cronometro=setInterval(
+                        function(){
+                            if (contador_s==60){
+                                contador_s=0;
+                                m.innerHTML = contador_m;
+                                contador_m++;
+                                if (contador_m==0){
+                                    contador_m=0;
+                                }
+                            }
+                            s.innerHTML = contador_s;
+                            m.innerHTML = contador_m;
+                            contador_s++;
+                        }
+                        ,1000);
+
+
+                }
+
+                //funcion fin del juego
+                function final(){
+                    if(cont==4){
+                        detenerse();
+                        }
+                }
+
+
+
+            </script>
+</body>
+</html>
