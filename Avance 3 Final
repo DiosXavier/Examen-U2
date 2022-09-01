@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <tittle>
+        </title>
+<style type="text/css">
+    canvas{
+        background-color: rgb(71, 174, 69);
+        padding-left: 0;
+                    padding-right: 0;
+                    margin-left: auto;
+                    margin-right: auto;
+                    display: block;
+                    width: 800px;
+    }
+    </style>
+    </head>
+    <body onload="carga()" style="background-color:rgb(71, 174, 69);">
+        <h2>
+            Cronometro: <span id="minutos"></span>:<span id="segundos"></span><br>
+            Pulse "Enter" para inicar la musica de fondo. 
+        </h2>
+        <canvas id= "mycanvas" width="900" height="745">
+            hola tu navegador no soporta canvas
+        </canvas>
+            <script type="text/javascript">
+                var cv=document.getElementById('mycanvas');
+                var ctx;
+                var color="red";
+                var fig="cir";
+                var press=false;
+                var player1;
+                var player2;
+                var direccion = null;
+                var speed=0;
+                var score=0;
+                var pause=false;
+                var pared = [null,null,null,null]; 
+                var cronometro;
+                var cont=0;
+                var colores="RED";
+
+                //titulo
+                var titulo= new Image();
+
+                //Personaje y Premio
+                var jesse= new Image();
+                var dinero= new Image();
+
+                //Musica de fondo
+                var audio = new Audio();
+                var audiof = new Audio();
+
+                //Sonido al tocar el dinero
+                var sonido = new Audio();
+
+                //fondo/Molde:
+                var fondo = new Image();
+                var molde = new Image();
+
+
+                //funcion dibujar cuadro
+
+                function run()
+                {
+                    cv=document.getElementById('mycanvas');
+                    ctx= cv.getContext('2d');
+
+
+                    //jugadores
+                    player1 = new Cuadro (785,695,25,20,"RED");
+                    player2 = new Cuadro (20,60,30,30,"BLUE");
+
+                    //Bordes del laberinto.
+                    //arriba
+                    pared[0] = new Cuadro (80,60,750,10,"GRAY");
+                    //izquierda
+                    pared[1] = new Cuadro (10,60,10,660,"GRAY");
+                    //abajo
+                    pared[2] = new Cuadro (10,720,820,10,"GRAY");
+                    //derecha
+                    pared[3] = new Cuadro (820,60,10,650,"GRAY");
+
+                    //Laberinto
+                    //Seccion 1:
+                    //vertical 1
+                    pared[4] = new Cuadro(415,525,3,195,colores);
+                    //Horizontal 1
+                    pared[5] = new Cuadro(415,520,85,3,colores);
+                    //vertical 2
+                    pared[6] = new Cuadro(495,520,3,35,colores);
+                    //Horizontal 2
+                    pared[7] = new Cuadro(495,553,120,3,colores);
+                    //vertical 3
+                    pared[8] = new Cuadro(535,553,3,135,colores);
+                    //Horizontal 3
+                    pared[9] = new Cuadro(455,685,120,3,colores);
+                    //vertical 4
+                    pared[10] = new Cuadro(455,553,3,135,colores);
+                    //Horizontal 4
+                    pared[11] = new Cuadro(455,587,43,3,colores);
+                    //Horizontal 5
+                    pared[12] = new Cuadro(495,618,43,3,colores);
+                    //vertical 5
+                    pared[13] = new Cuadro(495,618,3,38,colores);
+                    //vertical 6
+                    pared[14] = new Cuadro(657,655,3,63,colores);
+                    //vertical 7
+                    pared[15] = new Cuadro(737,686,3,33,colores);
+                    //Horizontal 8
+                    pared[16] = new Cuadro(737,684,43,3,colores);
+                    //Horizontal 9
+                    pared[17] = new Cuadro(618,620,82,3,colores);
+                    //vertical 10
+                    pared[18] = new Cuadro(618,620,3,65,colores);
+                    //vertical 11
+                    pared[19] = new Cuadro(698,620,3,65,colores)
+                    //Horizontal 10
+                    pared[20] = new Cuadro(580,650,41,3,colores);
+                    //vertical 12
+                    pared[21] = new Cuadro(578,588,3,65,colores);
+                    //Horizontal 11
+                    pared[22] = new Cuadro(578,585,120,3,colores);
+                    //Horizontal 12
+                    pared[23] = new Cuadro(698,652,80,3,colores);
+                    //vertical 13
+                    pared[24] = new Cuadro(658,522,3,67,colores);
+                    //Horizontal 13
+                    pared[25] = new Cuadro(538,522,123,3,colores);
+                    //vertical 14
+                    pared[26] = new Cuadro(536,490,3,34,colores);
+                    //Horizontal 14
+                    pared[27] = new Cuadro(335,490,285,3,colores);
+                    //vertical 15
+                    pared[28] = new Cuadro(335,460,3,30,colores);
+                    //vertical 16
+                    pared[29] = new Cuadro(615,425,3,65,colores);
+                    //Horizontal 15
+                    pared[30] = new Cuadro(335,457,40,3,colores);
+                    //vertical 17
+                    pared[31] = new Cuadro(375,360,3,100,colores);
+                    //Horizontal 16
+                    pared[32] = new Cuadro(295,360,80,3,colores);
+                    //vertical 18
+                    pared[33] = new Cuadro(295,360,3,30,colores);
+                    //Horizontal 17
+                    pared[34] = new Cuadro(255,390,43,3,colores);
+                    //vertical 19
+                    pared[35] = new Cuadro(255,325,3,65,colores);
+                    //Horizontal 18
+                    pared[36] = new Cuadro(135,325,120,3,colores);
+                    //vertical 20
+                    pared[37] = new Cuadro(135,325,3,35,colores);
+                    //Horizontal 19
+                    pared[38] = new Cuadro(55,360,83,3,colores);
+                    //vertical 21
+                    pared[39] = new Cuadro(55,360,3,30,colores);
+                    //Horizontal 20
+                    pared[40] = new Cuadro(55,390,80,3,colores);
+                    //vertical 22
+                    pared[41] = new Cuadro(135,390,3,35,colores);
+                    //Horizontal 21
+                    pared[42] = new Cuadro(135,425,40,3,colores);
+                    //vertical 23
+                    pared[43] = new Cuadro(175,360,3,68,colores);
+                    //Seccion 2:
+                    //vertical 24
+                    pared[44] = new Cuadro(737,590,3,65,colores);
+                    //Horizontal 22
+                    pared[45] = new Cuadro(737,590,40,3,colores);
+                    //vertical 25
+                    pared[46] = new Cuadro(777,425,3,168,colores);
+                    //Horizontal 23
+                    pared[47] = new Cuadro(737,425,40,3,colores);
+                    //vertical 26
+                    pared[48] = new Cuadro(738,330,3,160,colores);
+                    //Horizontal 24
+                    pared[49] = new Cuadro(738,358,40,3,colores);
+                    //vertical 27
+                    pared[50] = new Cuadro(778,295,3,65,colores);
+                    //Horizontal 25
+                    pared[51] = new Cuadro(700,295,80,3,colores);
+                    //vertical 28
+                    pared[52] = new Cuadro(697,228,3,100,colores);
+                    //Horizontal 26
+                    pared[53] = new Cuadro(697,228,80,3,colores);
+                    //vertical 29
+                    pared[54] = new Cuadro(740,95,3,135,colores);
+                    //Horizontal 27
+                    pared[55] = new Cuadro(580,130,158,3,colores);
+                    //vertical 30
+                    pared[56] = new Cuadro(578,130,3,99,colores);
+                    //Horizontal 28
+                    pared[57] = new Cuadro(460,229,123,3,colores);
+                    //vertical 31
+                    pared[58] = new Cuadro(455,195,3,65,colores);
+                    //Horizontal 29
+                    pared[59] = new Cuadro(295,195,160,3,colores);
+                    //vertical 32
+                    pared[60] = new Cuadro(375,130,3,65,colores);
+                    //Horizontal 30
+                    pared[61] = new Cuadro(375,130,125,3,colores);
+                    //vertical 32
+                    pared[62] = new Cuadro(495,98,3,30,colores);
+                    //vertical 33
+                    pared[63] = new Cuadro(538,98,3,98,colores);
+                    //Horizontal 31
+                    pared[64] = new Cuadro(538,98,83,3,colores);
+                    //vertical 34
+                    pared[65] = new Cuadro(615,70,3,30,colores);
+                    //vertical 35
+                    pared[66] = new Cuadro(698,70,3,30,colores);
+                    //vertical 36
+                    pared[66] = new Cuadro(658,95,3,130,colores);
+                    //Horizontal 32
+                    pared[67] = new Cuadro(658,163,40,3,colores);
+                    //vertical 37
+                    pared[68] = new Cuadro(695,163,3,35,colores);
+                    //vertical 38
+                    pared[69] = new Cuadro(778,98,3,97,colores);
+                    //Horizontal 33
+                    pared[70] = new Cuadro(778,195,40,3,colores);
+                    //Horizontal 34
+                    pared[71] = new Cuadro(740,260,80,3,colores);
+                    //Horizontal 35
+                    pared[72] = new Cuadro(770,390,50,3,colores);
+                    //Horizontal 36
+                    pared[73] = new Cuadro(775,620,40,3,colores);
+                    //Seccion 3:
+                    //Horizontal 36
+                    pared[74] = new Cuadro(20,555,35,3,colores);
+                    //Horizontal 37
+                    pared[75] = new Cuadro(20,293,35,3,colores);
+                    //Horizontal 38
+                    pared[76] = new Cuadro(20,195,35,3,colores);
+                    //vertical 39
+                    pared[77] = new Cuadro(698,70,3,30,colores);
+                    //vertical 40
+                    pared[78] = new Cuadro(458,70,3,28,colores);
+                    //vertical 41
+                    //pared[79] = new Cuadro(255,70,3,28,"BLACK");
+                    //Horizontal 39
+                    pared[80] = new Cuadro(255,98,40,3,colores);
+                    //vertical 42
+                    pared[81] = new Cuadro(295,98,3,65,colores);
+                    //Horizontal 40
+                    pared[82] = new Cuadro(255,163,85,3,colores);
+                    //vertical 43
+                    pared[83] = new Cuadro(255,163,3,65,colores);
+                    //Horizontal 41
+                    pared[84] = new Cuadro(175,227,240,3,colores);
+                    //vertical 44
+                    pared[85] = new Cuadro(175,195,3,130,colores);
+                    //Horizontal 42
+                    pared[86] = new Cuadro(135,195,43,3,colores);
+                    //Horizontal 43
+                    pared[87] = new Cuadro(135,258,43,3,colores);
+                    //Horizontal 44
+                    pared[88] = new Cuadro(175,293,40,3,colores);
+                    //Horizontal 45
+                    pared[89] = new Cuadro(416,258,43,3,colores);
+                    //vertical 45
+                    pared[90] = new Cuadro(416,258,3,133,colores);
+                    //Horizontal 46
+                    pared[91] = new Cuadro(416,391,120,3,colores);
+                    //vertical 46
+                    pared[92] = new Cuadro(538,391,3,68,colores);
+                    //Horizontal 47
+                    pared[93] = new Cuadro(418,456,159,3,colores);
+                    //Horizontal 48
+                    pared[94] = new Cuadro(375,423,125,3,colores);
+                    //Horizontal 49
+                    pared[95] = new Cuadro(575,423,45,3,colores);
+                    //Horizontal 50
+                    pared[96] = new Cuadro(620,456,43,3,colores);
+                    //Horizontal 51
+                    pared[97] = new Cuadro(658,423,43,3,colores);
+                    //Horizontal 52
+                    pared[98] = new Cuadro(658,488,43,3,colores);
+                    //Horizontal 53
+                    pared[99] = new Cuadro(698,520,43,3,colores);
+                    //Horizontal 54
+                    pared[100] = new Cuadro(698,553,78,3,colores);
+                    //Horizontal 55
+                    pared[101] = new Cuadro(698,390,43,3,colores);
+                    //Horizontal 56
+                    pared[102] = new Cuadro(615,390,43,3,colores);
+                    //Horizontal 57
+                    pared[103] = new Cuadro(658,358,40,3,colores);
+                    //Horizontal 58
+                    pared[104] = new Cuadro(498,358,120,3,colores);
+                    //Horizontal 59
+                    pared[105] = new Cuadro(496,262,120,3,colores);
+                    //Horizontal 60
+                    pared[106] = new Cuadro(538,325,120,3,colores);
+                    //Horizontal 61
+                    pared[107] = new Cuadro(658,260,43,3,colores);
+                    //Horizontal 61
+                    pared[108] = new Cuadro(620,194,40,3,colores);
+                    //vertical 47
+                    pared[109] = new Cuadro(496,262,3,95,colores);
+                    //vertical 48
+                    pared[110] = new Cuadro(458,295,3,96,colores);
+                    //vertical 49
+                    pared[111] = new Cuadro(535,295,3,33,colores);
+                    //vertical 50
+                    pared[112] = new Cuadro(578,263,3,33,colores);
+                    //vertical 51
+                    pared[113] = new Cuadro(658,263,3,30,colores);
+                    //vertical 52
+                    pared[114] = new Cuadro(656,325,3,100,colores);
+                    //vertical 53
+                    pared[115] = new Cuadro(575,358,3,68,colores);
+                    //vertical 54
+                    pared[116] = new Cuadro(699,424,3,99,colores);
+                    //vertical 55
+                    pared[117] = new Cuadro(617,163,3,163,colores);
+                    //Horizontal 62
+                    pared[118] = new Cuadro(418,161,78,3,colores);
+                    //vertical 56
+                    pared[119] = new Cuadro(495,161,3,35,colores);
+                    //Horizontal 63
+                    pared[120] = new Cuadro(495,194,45,3,colores);
+                    //vertical 56
+                    pared[121] = new Cuadro(415,98,3,35,colores);
+                    //Horizontal 64
+                    pared[122] = new Cuadro(335,96,83,3,colores);
+                    //vertical 57
+                    pared[123] = new Cuadro(335,96,3,30,colores);
+                    //vertical 58
+                    pared[124] = new Cuadro(374,228,3,33,colores);
+                    //vertical 59
+                    pared[125] = new Cuadro(254,261,3,33,colores);
+                    //vertical 60
+                    pared[126] = new Cuadro(334,261,3,33,colores);
+                    //vertical 61
+                    pared[127] = new Cuadro(334,326,3,33,colores);
+                    //vertical 62
+                    pared[128] = new Cuadro(295,294,3,33,colores);
+                    //Horizontal 65
+                    pared[129] = new Cuadro(255,294,40,3,colores);
+                    //Horizontal 66
+                    pared[130] = new Cuadro(215,260,120,3,colores);
+                    //Horizontal 67
+                    pared[131] = new Cuadro(336,293,80,3,colores);
+                    //Horizontal 68
+                    pared[132] = new Cuadro(336,326,55,3,colores);
+                    //Horizontal 69
+                    pared[133] = new Cuadro(20,95,35,3,colores);
+                    //vertical 63
+                    pared[134] = new Cuadro(53,95,3,68,colores);
+                    //Horizontal 70
+                    pared[135] = new Cuadro(53,161,123,3,colores);
+                    //vertical 64
+                    pared[136] = new Cuadro(174,101,3,60,colores);
+                    //Horizontal 71
+                    pared[137] = new Cuadro(173,96,46,3,colores);
+                    //vertical 65
+                    pared[138] = new Cuadro(216,96,3,96,colores);
+                    //Horizontal 72
+                    pared[139] = new Cuadro(216,129,40,3,colores);
+                    //Horizontal 72
+                    pared[140] = new Cuadro(92,127,45,3,colores);
+                    //vertical 66
+                    pared[141] = new Cuadro(92,70,3,60,colores);
+                    //vertical 67
+                    pared[142] = new Cuadro(93,162,3,165,colores);
+                    //Horizontal 73
+                    pared[143] = new Cuadro(49,325,45,3,colores);
+                    //Seccion 3:
+                    //vertical 68
+                    pared[144] = new Cuadro(376,490,3,195,colores);
+                    //Horizontal 74
+                    pared[145] = new Cuadro(295,650,85,3,colores);
+                    //Horizontal 75
+                    pared[146] = new Cuadro(295,686,40,3,colores);
+                    //vertical 69
+                    pared[147] = new Cuadro(295,686,3,32,colores);
+                    //vertical 70
+                    pared[148] = new Cuadro(295,588,3,62,colores);
+                    //Horizontal 76
+                    pared[149] = new Cuadro(255,588,40,3,colores);
+                    //vertical 71
+                    pared[150] = new Cuadro(295,424,3,98,colores);
+                    //vertical 72
+                    pared[151] = new Cuadro(255,556,3,34,colores);
+                    //Horizontal 77
+                    pared[152] = new Cuadro(215,556,40,3,colores);
+                    //vertical 73
+                    pared[153] = new Cuadro(215,526,3,160,colores);
+                    //Horizontal 78
+                    pared[154] = new Cuadro(135,684,124,3,colores);
+                    //Horizontal 79
+                    pared[155] = new Cuadro(215,422,124,3,colores);
+                    //vertical 74
+                    pared[156] = new Cuadro(214,362,3,95,colores);
+                    //Horizontal 80
+                    pared[157] = new Cuadro(34,456,182,3,colores);
+                    //Horizontal 81
+                    pared[158] = new Cuadro(20,426,75,3,colores);
+                    //vertical 75
+                    pared[159] = new Cuadro(93,426,3,70,colores);
+                    //Horizontal 82
+                    pared[160] = new Cuadro(20,586,75,3,colores);
+                    //vertical 76
+                    pared[161] = new Cuadro(93,523,3,65,colores);
+                    //Horizontal 83
+                    pared[162] = new Cuadro(54,523,78,3,colores);
+                    //vertical 77
+                    pared[163] = new Cuadro(133,483,3,43,colores);
+                    //Horizontal 84
+                    pared[164] = new Cuadro(254,523,83,3,colores);
+                    //vertical 78
+                    pared[165] = new Cuadro(335,522,3,96,colores);
+                    //vertical 79
+                    pared[166] = new Cuadro(254,456,3,67,colores);
+                    //Horizontal 85
+                    pared[167] = new Cuadro(176,489,81,3,colores);
+                    //vertical 80
+                    pared[168] = new Cuadro(176,489,3,67,colores);
+                    //Horizontal 86
+                    pared[169] = new Cuadro(136,555,40,3,colores);
+                    //vertical 81
+                    pared[170] = new Cuadro(136,555,3,65,colores);
+                    //Horizontal 87
+                    pared[171] = new Cuadro(136,620,40,3,colores);
+                    //vertical 82
+                    pared[172] = new Cuadro(173,620,3,32,colores);
+                    //Horizontal 88
+                    pared[173] = new Cuadro(93,652,83,3,colores);
+                    //vertical 83
+                    pared[174] = new Cuadro(93,652,3,32,colores)
+                    //Horizontal 89
+                    pared[175] = new Cuadro(53,684,40,3,colores);
+                    //vertical 84
+                    pared[176] = new Cuadro(53,621,3,63,colores)
+                    //Horizontal 90
+                    pared[177] = new Cuadro(53,621,40,3,colores);
+                    //vertical 85
+                    pared[178] = new Cuadro(253,621,3,63,colores)
+
+
+
+
+
+                    //cargar imagenes
+                    fondo.src="fondo.jpg";
+                    molde.src="laberinto.jpg";
+                    titulo.src="titulo.png";
+                    jesse.src='jesse.png';
+                    dinero.src='dinero2.png';
+                    //Sonido
+                    sonido.src='yojoe.mp3';
+                    audio.src='BB Theme.mp3';
+                    audiof.src='Victoria.mp3';
+                    //sonido.src='jese y joy.mp3';
+
+                    paint();
+                }
+
+                function paint(){
+
+                    window.requestAnimationFrame(paint);
+                    ctx.fillStyle= "rgb(71, 174, 69)";
+                    ctx.fillRect(0,0,900,900);
+
+                    //pintar imagenes
+                    //fondo
+                    ctx.drawImage(fondo,10,60,820,665);
+                    //titulo
+                    ctx.drawImage(titulo,225,0,300,55);
+                    //Molde de laberinto
+                    //ctx.drawImage(molde,10,60,820,665);
+                    //jugadores
+                    //player1.pintar(ctx);
+                    ctx.drawImage(jesse,player1.x,player1.y,player1.h,player1.w);
+                    //player2.pintar(ctx);
+                    ctx.drawImage(dinero,player2.x,player2.y,player2.h,player2.w);
+
+                    //Pintar Paredes
+                    //Ciclo para paredes infinitas
+                        for(var i=0; i<=pared.length; i++){
+                            if(pared[i]){
+                            pared[i].pintar(ctx);
+                            }
+                        }
+                    
+                    
+
+                    ctx.beginPath();
+                    ctx.font="25px Arial";
+                    ctx.fillStyle="Black";
+                    ctx.fillText("Dinero: $"+ score,635,50);
+                    ctx.closePath();
+
+                    if(pause){
+                        ctx.fillStyle= "rgba(0, 0, 0,0.5)";
+                        ctx.fillRect(0,0,900,900);
+                        ctx,fillStyle="white";
+                        ctx.fillText("P A U S A",380,230);  
+                    }
+
+                    if(!pause){
+                        update();
+                    }
+                }
+
+                function update(){
+                    speed=3;
+                    //arriba
+                    if(direccion=='arriba'){
+                        player1.y-=speed;
+                        if(player1.y<0){
+                            player1.y=745;
+                    }
+                    }
+                    //abajo
+                    if(direccion=='abajo'){
+                        player1.y+=speed;
+                        if(player1.y>745){
+                            player1.y=0;
+                    }
+                    }
+                    //izquierda
+                    if(direccion=='izquierda'){
+                        player1.x-=speed;
+                        if(player1.x<0){
+                        player1.x=900;
+                    }
+                    }
+                    //derecha
+                    if(direccion=='derecha'){
+                        player1.x+=speed;
+                        if(player1.x>900){
+                        player1.x=0;
+                    }
+                    }
+
+                    //colision con bolsa de dinero
+                    if(player1.se_tocan(player2)){
+                        //Desaparece del canvas
+                        player2.x=900;
+                        player2.y=900;
+                        
+                        sonido.play();
+                        score+=700000;
+                        cont++;
+                        //fin del juego
+                        final();
+                    }
+
+                    //colision con pared
+                    for(var i=0; i<=pared.length; i++){
+                    if(player1.se_tocan(pared[i])){
+                        if(direccion=='arriba'){
+                        player1.y+=speed;
+                    }
+                    //abajo
+                    if(direccion=='abajo'){
+                        player1.y-=speed;
+                    }
+                    //izquierda
+                    if(direccion=='izquierda'){
+                        player1.x+=speed;
+                    }
+                    //derecha
+                    if(direccion=='derecha'){
+                        player1.x-=speed;
+                    }
+                    }
+                    }
+
+
+                    if(player2.se_tocan(pared)){
+                        player2.x=getRandomIntInclusive(700);
+                        player2.y=getRandomIntInclusive(600);
+                     }
+                }
+
+                
+
+
+                //funcion nueva (Animacion de FPS)
+
+                window.requestAnimationFrame = (function () {
+                return window.requestAnimationFrame ||
+                 window.webkitRequestAnimationFrame ||
+                 window.mozRequestAnimationFrame ||
+                 function (callback) {
+                  window.setTimeout(callback, 17);
+                };
+                }());
+
+                //funcion color aleatorio
+                function generateRandomColor() {
+                 var letters = '0123456789ABCDEF';
+                var color = '#';
+                for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+                }
+
+                //funcion color aleatorio
+                function getRandomIntInclusive(max) {
+                min = Math.ceil(100);
+                max = Math.floor(max);
+                return Math.floor(Math.random() * (max - min + 1) + min);
+                }
+
+                //Correr codigo
+                window.addEventListener('load',run,false);
+
+
+
+                //clase Objeto Cuadrado
+                function Cuadro(x,y,w,h,c)
+                {
+                    this.x=x;
+                    this.y=y;
+                    this.w=w;
+                    this.h=h;
+                    this.c=c;
+
+                    //Funcion de verificacion si setocan las figuras
+                    this.se_tocan = function (target) { 
+                        if(target){ 
+                            if(this.x < target.x + target.w &&
+                            this.x + this.w > target.x && 
+                            this.y < target.y + target.h && 
+                            this.y + this.h > target.y){
+                            return true;
+                        }
+                        }
+                    };
+
+                    
+                    //Funcion para pintar;
+                    this.pintar = function(ctx){
+                        ctx.fillStyle=this.c;
+                        ctx.fillRect(this.x,this.y,this.w,this.h);
+                        ctx.strokeRect(this.x,this.y,this.w,this.h);
+                    }
+                }
+
+                //Movimiento de cuadro
+
+                document.addEventListener('keydown',function(e){
+                    console.log(e)
+                    //arriba
+                    if(e.keyCode==87 || e.keycode==38 ){
+                        direccion='arriba';
+                    }
+                    //abajo
+                    if(e.keyCode==83 || e.keycode==40){
+                        direccion='abajo';
+                    }
+                    //izquierda
+                    if(e.keyCode==65 || e.keycode==37){
+                        direccion='izquierda';
+                    }
+                    //derecha
+                    if(e.keyCode==68 || e.keycode==39){
+                        direccion='derecha';
+                    }
+
+                    //enter musica:
+                     if(e.keyCode==13){
+                    audio.play();
+                     }
+
+                    //Pausa
+                    if(e.keyCode==32){
+                        if(pause==false){
+                            pause=true;
+                            audio.pause();
+                        }else{
+                            pause=false;
+                        }
+                    }
+                })
+
+                //click de ubicacion:
+                cv.addEventListener('click',function(e){
+                    console.log(e)
+                })
+
+                //funciones del cronometro
+                function detenerse(){
+                    clearInterval(cronometro);
+                    audio.pause();
+                    audiof.play();
+                    alert("Jesse ha escapado de Nuevo Mexico, Felicidades");
+                }
+                function carga(){
+                    contador_s=0;
+                    contador_m=0;
+                    s=document.getElementById("segundos");
+                    m=document.getElementById("minutos");
+
+                    cronometro=setInterval(
+                        function(){
+                            if (contador_s==60){
+                                contador_s=0;
+                                m.innerHTML = contador_m;
+                                contador_m++;
+                                if (contador_m==0){
+                                    contador_m=0;
+                                }
+                            }
+                            s.innerHTML = contador_s;
+                            m.innerHTML = contador_m;
+                            contador_s++;
+                        }
+                        ,1000);
+
+
+                }
+
+                //funcion fin del juego
+                function final(){
+                    if(cont==1){
+                        detenerse();
+
+                        }
+                }
+
+
+
+            </script>
+</body>
+</html>
